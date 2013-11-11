@@ -1,6 +1,8 @@
 When(/^I search for (.*)$/) do |term|
   @scores ||= {}
-  @scores[term] = @last_score = ScoreCache.for_term(term)
+  visit query_path(term: term)
+  score = ActiveSupport::JSON.decode(page.source).fetch("score")
+  @scores[term] = @last_score = score
 end
 
 Then(/^the beatles should have a higher score than comcast/) do
@@ -24,5 +26,5 @@ Then(/^I should see a score of 2.5$/) do
 end
 
 Then(/^I should see no score$/) do
-  @last_score.should == RockScore::NoScore
+  @last_score.should == nil
 end
